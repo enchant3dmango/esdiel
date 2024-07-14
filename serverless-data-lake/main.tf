@@ -37,7 +37,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 # Lambda Function
-resource "aws_lambda_function" "handler" {
+resource "aws_lambda_function" "sdl_handler" {
   filename         = "lambda.zip"
   function_name    = "handler"
   role             = aws_iam_role.lambda_exec.arn
@@ -58,7 +58,7 @@ resource "aws_s3_bucket_notification" "sdl_bucket_notification" {
   bucket = aws_s3_bucket.sdl_bucket.bucket
 
   lambda_function {
-    lambda_function_arn = aws_lambda_function.handler.arn
+    lambda_function_arn = aws_lambda_function.sdl_handler.arn
     events              = ["s3:ObjectCreated:*"]
   }
 }

@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "s3_bucket_name" {
   description = "The name of the S3 bucket to store files"
-  default     = "sdl"
+  default     = "sdl_bucket"
 }
 
 variable "glue_database_name" {
@@ -20,5 +20,5 @@ variable "glue_job_name" {
 
 variable "glue_script_location" {
   description = "The S3 location of the Glue script"
-  default     = "s3://sdl/assets/scripts/glue_processing_script.py"
+  default     = "s3://sdl_bucket/assets/scripts/glue_processing_script.py"
 }
