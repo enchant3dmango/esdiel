@@ -5,7 +5,7 @@ output "s3_bucket_name" {
 
 output "lambda_function_name" {
   description = "The name of the Lambda function"
-  value       = aws_lambda_function.handler.function_name
+  value       = aws_lambda_function.sdl_handler.function_name
 }
 
 output "glue_job_name" {

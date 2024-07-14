@@ -39,7 +39,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 # Lambda Function
 resource "aws_lambda_function" "sdl_handler" {
   filename         = "lambda.zip"
-  function_name    = "handler"
+  function_name    = "sdl_handler"
   role             = aws_iam_role.lambda_exec.arn
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.8"
