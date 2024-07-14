@@ -14,32 +14,32 @@ job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
 # Read CSV file from S3
-datasource0 = glueContext.create_dynamic_frame.from_options(
+datasource = glueContext.create_dynamic_frame.from_options(
     format_options={"separator": ","},
     connection_type="s3",
     format="csv",
     connection_options={"paths": ["s3://sdl/"], "recurse": True},
-    transformation_ctx="datasource0",
+    transformation_ctx="datasource",
 )
 
 # Apply transformations
-applymapping1 = ApplyMapping.apply(
-    frame=datasource0,
+applymapping = ApplyMapping.apply(
+    frame=datasource,
     mappings = [
         ("name", "string", "name", "string"),
         ("location", "string", "nationality", "string"),
         ("age", "int", "age", "int"),
     ],
-    transformation_ctx = "applymapping1"
+    transformation_ctx = "applymapping"
 )
 
 # Write the transformed data to S3
-datasink2 = glueContext.write_dynamic_frame.from_options(
-    frame=applymapping1,
+datasink = glueContext.write_dynamic_frame.from_options(
+    frame=applymapping,
     connection_type="s3",
     connection_options={"path": "s3://sdl-transformed/"},
     format="parquet",
-    transformation_ctx="datasink2",
+    transformation_ctx="datasink",
 )
 
 job.commit()
