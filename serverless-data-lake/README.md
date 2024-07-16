@@ -1,4 +1,4 @@
-# Serverless Data Lake (SDL) - Learning AWS & Terraform
+# Serverless Data Lake (SDL) using Amazon Web Service
 
 <p align="center">
   <a href="https://github.com/enchant3dmango/awesome">
@@ -8,6 +8,8 @@
     </picture>    
   </a>
 </p>
+
+_This project infrastructure is managed using Terraform._
 
 ### Setup
 Coming soon!
