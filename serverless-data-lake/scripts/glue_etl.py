@@ -18,7 +18,7 @@ datasource = glueContext.create_dynamic_frame.from_options(
     format_options={"separator": ","},
     connection_type="s3",
     format="csv",
-    connection_options={"paths": ["s3://sdl/"], "recurse": True},
+    connection_options={"paths": ["s3://esdiel/"], "recurse": True},
     transformation_ctx="datasource",
 )
 
@@ -37,7 +37,7 @@ applymapping = ApplyMapping.apply(
 datasink = glueContext.write_dynamic_frame.from_options(
     frame=applymapping,
     connection_type="s3",
-    connection_options={"path": "s3://sdl-transformed/"},
+    connection_options={"path": "s3://esdiel-transformed/"},
     format="parquet",
     transformation_ctx="datasink",
 )
