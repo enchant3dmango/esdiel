@@ -110,7 +110,7 @@ resource "aws_glue_catalog_database" "esdiel_database" {
 
 # Glue Table for Raw Data
 resource "aws_glue_catalog_table" "esdiel_data_raw" {
-  name          = "esdiel-data-raw"
+  name          = var.aws_glue_table_raw
   database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"
@@ -149,7 +149,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
 
 # Glue Table for Tranformed Data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
-  name          = "esdiel_data_transformed"
+  name          = var.aws_glue_table_transformed
   database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"

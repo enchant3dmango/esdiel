@@ -8,6 +8,16 @@ variable "aws_profile" {
   default     = "enchant3dmango"
 }
 
+variable "aws_s3_esdiel_bucket" {
+  description = "The source bucket name"
+  default     = "esdiel-bucket"
+}
+
+variable "aws_s3_esdiel_transformed_bucket" {
+  description = "The target bucket name"
+  default     = "esdiel-bucket-transformed"
+}
+
 variable "aws_glue_database_name" {
   description = "The name of the Glue database"
   default     = "esdiel_db"
@@ -15,7 +25,7 @@ variable "aws_glue_database_name" {
 
 variable "aws_glue_etl_job_name" {
   description = "The name of the Glue job"
-  default     = "Transform Esdiel Data"
+  default     = "Transform Esdiel data"
 }
 
 variable "aws_glue_iam_role_name" {
@@ -26,6 +36,16 @@ variable "aws_glue_iam_role_name" {
 variable "aws_glue_etl_script_location" {
   description = "The S3 location of the Glue script"
   default     = "s3://esdiel-bucket/scripts/glue_etl.py"
+}
+
+variable "aws_glue_table_raw" {
+  description = "The Glue table name for Esdiel raw data"
+  default     = "EsdielGlueRole"
+}
+
+variable "aws_glue_table_transformed" {
+  description = "The Glue table name for Esdiel transformed data"
+  default     = "EsdielGlueRole"
 }
 
 variable "aws_lambda_role_name" {
