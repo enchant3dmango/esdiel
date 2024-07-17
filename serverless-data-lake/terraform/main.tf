@@ -158,7 +158,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   }
 
   storage_descriptor {
-    location          = "s3://esdiel-transformed-bucket/data"
+    location          = "s3://esdiel-bucket-transformed/data"
     input_format      = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format     = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
     compressed        = false
@@ -234,7 +234,7 @@ resource "aws_iam_role_policy" "glue_access_policy" {
         Effect = "Allow",
         Resource = [
           "arn:aws:s3:::esdiel-bucket/*",
-          "arn:aws:s3:::esdiel-transformed-bucket/*"
+          "arn:aws:s3:::esdiel-bucket-transformed/*"
         ],
       },
       {
@@ -242,7 +242,7 @@ resource "aws_iam_role_policy" "glue_access_policy" {
         Effect = "Allow",
         Resource = [
           "arn:aws:s3:::esdiel-bucket",
-          "arn:aws:s3:::esdiel-transformed-bucket"
+          "arn:aws:s3:::esdiel-bucket-transformed"
         ],
       },
     ],

@@ -51,7 +51,7 @@ applymapping.show()
 datasink = glueContext.write_dynamic_frame.from_options(
     frame=applymapping,
     connection_type="s3",
-    connection_options={"path": "s3://esdiel-transformed-bucket/data"},
+    connection_options={"path": "s3://esdiel-bucket-transformed/data"},
     format="parquet",
     transformation_ctx="datasink",
 )
