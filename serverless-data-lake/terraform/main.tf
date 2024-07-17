@@ -20,7 +20,7 @@ module "notifications" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
   version = "4.1.2"
 
-  bucket = module.s3.s3_bucket_id
+  bucket = module.s3_esdiel.s3_bucket_id
 
   lambda_notifications = {
     lambda_function = {
@@ -88,14 +88,14 @@ module "lambda" {
   local_existing_package                  = "../lambda.zip"
 
   environment_variables = {
-    BUCKET        = module.s3.s3_bucket_id
+    BUCKET        = module.s3_esdiel.s3_bucket_id
     GLUE_JOB_NAME = var.aws_glue_etl_job_name
   }
 
   allowed_triggers = {
     s3 = {
       service       = "s3"
-      source_arn    = module.s3.s3_bucket_arn
+      source_arn    = module.s3_esdiel.s3_bucket_arn
       events        = ["s3:ObjectCreated:*"]
       filter_prefix = "data/"
       filter_suffix = ".csv"
