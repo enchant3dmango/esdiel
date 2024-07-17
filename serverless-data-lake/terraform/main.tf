@@ -35,6 +35,7 @@ module "lambda" {
   description        = "My awesome serverless data lake (Esdiel) handler"
   handler            = "lambda_function.handler"
   runtime            = "python3.8"
+  role_name          = var.aws_lambda_role_name
   attach_policy_json = true
   policy_json = jsonencode({
     Version = "2012-10-17",
@@ -86,9 +87,9 @@ module "lambda" {
 
   allowed_triggers = {
     s3 = {
-      service    = "s3"
-      source_arn = module.s3.s3_bucket_arn
-      events = ["s3:ObjectCreated:*"]
+      service       = "s3"
+      source_arn    = module.s3.s3_bucket_arn
+      events        = ["s3:ObjectCreated:*"]
       filter_prefix = "data/"
       filter_suffix = ".csv"
     }
@@ -96,14 +97,14 @@ module "lambda" {
 }
 
 # Glue Database
-resource "aws_glue_catalog_database" "default" {
+resource "aws_glue_catalog_database" "esdiel_database" {
   name = var.aws_glue_database_name
 }
 
 # Glue Table for Raw Data
 resource "aws_glue_catalog_table" "esdiel_data_raw" {
   name          = "esdiel-data-raw"
-  database_name = aws_glue_catalog_database.default.name
+  database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"
   parameters = {
@@ -142,7 +143,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
 # Glue Table for Tranformed Data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   name          = "esdiel_data_transformed"
-  database_name = aws_glue_catalog_database.default.name
+  database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"
   parameters = {
