@@ -5,12 +5,17 @@ variable "aws_region" {
 
 variable "aws_glue_database_name" {
   description = "The name of the Glue database"
-  default     = "sdl_db"
+  default     = "esdiel_db"
 }
 
 variable "aws_glue_etl_job_name" {
   description = "The name of the Glue job"
-  default     = "sdl_etl_job"
+  default     = "Transform Esdiel Data"
+}
+
+variable "aws_glue_iam_role_name" {
+  description = "The name of IAM Role of Glue"
+  default = "EsdielGlueRole"
 }
 
 variable "aws_glue_etl_script_location" {

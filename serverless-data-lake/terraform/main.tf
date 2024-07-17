@@ -31,7 +31,7 @@ module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "7.7.0"
 
-  function_name      = "sdl_handler"
+  function_name      = "esdiel-handler"
   description        = "My awesome serverless data lake (sdl) handler"
   handler            = "lambda_function.lambda_handler"
   runtime            = "python3.8"
@@ -91,10 +91,6 @@ module "lambda" {
   }
 }
 
-# Glue Database
-resource "aws_glue_catalog_database" "default" {
-  name = var.aws_glue_database_name
-}
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
@@ -112,9 +108,9 @@ resource "aws_glue_job" "glue_etl_job" {
   }
 }
 
-# IAM Role for Glue with appropriate permissions
+# IAM Role for Glue
 resource "aws_iam_role" "glue_role" {
-  name = "glue_role"
+  name = var.aws_glue_iam_role_name
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -129,6 +125,7 @@ resource "aws_iam_role" "glue_role" {
   })
 }
 
+# IAM Role Policy for Glue
 resource "aws_iam_role_policy" "glue_access_policy" {
   role = aws_iam_role.glue_role.name
 
