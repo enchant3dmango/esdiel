@@ -3,6 +3,11 @@ variable "aws_region" {
   default     = "ap-southeast-1"
 }
 
+variable "aws_profile" {
+  description = "The project credentials profile"
+  default     = "enchant3dmango"
+}
+
 variable "aws_glue_database_name" {
   description = "The name of the Glue database"
   default     = "esdiel_db"
@@ -15,7 +20,7 @@ variable "aws_glue_etl_job_name" {
 
 variable "aws_glue_iam_role_name" {
   description = "The name of IAM Role of Glue"
-  default = "EsdielGlueRole"
+  default     = "EsdielGlueRole"
 }
 
 variable "aws_glue_etl_script_location" {

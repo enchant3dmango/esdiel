@@ -32,15 +32,19 @@ module "lambda" {
   version = "7.7.0"
 
   function_name      = "esdiel-handler"
-  description        = "My awesome serverless data lake (sdl) handler"
-  handler            = "lambda_function.lambda_handler"
+  description        = "My awesome serverless data lake (Esdiel) handler"
+  handler            = "lambda_function.handler"
   runtime            = "python3.8"
   attach_policy_json = true
   policy_json = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Action   = ["logs:*", "s3:*", "glue:*"],
+        Action = [
+          "logs:*",
+          "s3:*",
+          "glue:*"
+        ],
         Resource = "*",
         Effect   = "Allow",
       },
@@ -48,7 +52,7 @@ module "lambda" {
   })
 
   assume_role_policy_statements = {
-    account_root = {
+    account_ar = {
       effect  = "Allow",
       actions = ["sts:AssumeRole"],
       principals = {
@@ -59,7 +63,7 @@ module "lambda" {
       }
     }
 
-    glue_principal = {
+    glue_ar = {
       effect  = "Allow",
       actions = ["sts:AssumeRole"],
       principals = {
@@ -82,9 +86,9 @@ module "lambda" {
 
   allowed_triggers = {
     s3 = {
-      service       = "s3"
-      source_arn    = module.s3.s3_bucket_arn
-      events        = ["s3:ObjectCreated:*"]
+      service    = "s3"
+      source_arn = module.s3.s3_bucket_arn
+      events = ["s3:ObjectCreated:*"]
       filter_prefix = "data/"
       filter_suffix = ".csv"
     }
