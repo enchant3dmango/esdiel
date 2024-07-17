@@ -40,12 +40,12 @@ variable "aws_glue_etl_script_location" {
 
 variable "aws_glue_table_raw" {
   description = "The Glue table name for Esdiel raw data"
-  default     = "EsdielGlueRole"
+  default     = "esdiel_data_raw"
 }
 
 variable "aws_glue_table_transformed" {
   description = "The Glue table name for Esdiel transformed data"
-  default     = "EsdielGlueRole"
+  default     = "esdiel_data_transformed"
 }
 
 variable "aws_lambda_role_name" {
