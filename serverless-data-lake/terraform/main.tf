@@ -1,5 +1,7 @@
+data "aws_caller_identity" "current" {}
+
 # S3 Bucket
-module "s3_bucket" {
+module "s3" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
@@ -11,12 +13,12 @@ module "notifications" {
   source  = "terraform-aws-modules/s3-bucket/aws//modules/notification"
   version = "4.1.2"
 
-  bucket = module.s3_bucket.s3_bucket_id
+  bucket = module.s3.s3_bucket_id
 
   lambda_notifications = {
     lambda_function = {
-      function_arn  = module.lambda_function.lambda_function_arn
-      function_name = module.lambda_function.lambda_function_name
+      function_arn  = module.lambda.lambda_function_arn
+      function_name = module.lambda.lambda_function_name
       events        = ["s3:ObjectCreated:*"]
       filter_prefix = "data/"
       filter_suffix = ".csv"
@@ -25,28 +27,17 @@ module "notifications" {
 }
 
 
-# IAM Role for Lambda
-resource "aws_iam_role" "lambda_role" {
-  name = "SDLLambdaRole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "lambda.amazonaws.com",
-        },
-      },
-    ],
-  })
-}
+# Lambda Function
+module "lambda" {
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.7.0"
 
-# IAM Policy for Lambda
-resource "aws_iam_role_policy" "lambda_policy" {
-  name = "SDLLambdaRolePolicy"
-  role = aws_iam_role.lambda_role.id
-  policy = jsonencode({
+  function_name      = "sdl_handler"
+  description        = "My awesome serverless data lake (sdl) handler"
+  handler            = "lambda_function.lambda_handler"
+  runtime            = "python3.8"
+  attach_policy_json = true
+  policy_json = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -56,32 +47,44 @@ resource "aws_iam_role_policy" "lambda_policy" {
       },
     ],
   })
-}
 
-# Lambda Function
-module "lambda_function" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "7.7.0"
+  assume_role_policy_statements = {
+    account_root = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        account_principal = {
+          type        = "AWS",
+          identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+        }
+      }
+    }
 
-  function_name = "sdl_handler"
-  description   = "My awesome serverless data lake (sdl) handler"
-  handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.8"
+    glue_principal = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        glue = {
+          type        = "Service",
+          identifiers = ["glue.amazonaws.com"]
+        }
+      }
+    }
+  }
 
-  create_package         = false
-  local_existing_package = "../lambda.zip"
-
-  role_name = aws_iam_role.lambda_role.name
+  create_current_version_allowed_triggers = false
+  create_package                          = false
+  local_existing_package                  = "../lambda.zip"
 
   environment_variables = {
-    BUCKET        = module.s3_bucket.s3_bucket_id
+    BUCKET        = module.s3.s3_bucket_id
     GLUE_JOB_NAME = var.aws_glue_etl_job_name
   }
 
   allowed_triggers = {
     s3 = {
       service       = "s3"
-      source_arn    = module.s3_bucket.s3_bucket_arn
+      source_arn    = module.s3.s3_bucket_arn
       events        = ["s3:ObjectCreated:*"]
       filter_prefix = "data/"
       filter_suffix = ".csv"
@@ -98,7 +101,7 @@ resource "aws_glue_catalog_database" "default" {
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
   name     = var.aws_glue_etl_job_name
-  role_arn = module.lambda_function.lambda_role_arn
+  role_arn = module.lambda.lambda_role_arn
 
   command {
     name            = "glueetl"
