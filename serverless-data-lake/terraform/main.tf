@@ -1,11 +1,18 @@
 data "aws_caller_identity" "current" {}
 
 # S3 Bucket
-module "s3" {
+module "s3_esdiel" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
   bucket = "esdiel-bucket"
+}
+
+module "s3_esdiel_transformed" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "4.1.2"
+
+  bucket = "esdiel-bucket-transformed"
 }
 
 # S3 Bucket Notification
