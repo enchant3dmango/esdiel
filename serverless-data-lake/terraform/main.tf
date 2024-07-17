@@ -91,6 +91,88 @@ module "lambda" {
   }
 }
 
+# Glue Database
+resource "aws_glue_catalog_database" "default" {
+  name = var.aws_glue_database_name
+}
+
+# Glue Table for Raw Data
+resource "aws_glue_catalog_table" "esdiel_data_raw" {
+  name          = "esdiel-data-raw"
+  database_name = aws_glue_catalog_database.default.name
+
+  table_type = "EXTERNAL_TABLE"
+  parameters = {
+    "classification" = "csv"
+  }
+
+  storage_descriptor {
+    location          = "s3://esdiel-bucket/data"
+    input_format      = "org.apache.hadoop.mapred.TextInputFormat"
+    output_format     = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
+    compressed        = false
+    number_of_buckets = -1
+    ser_de_info {
+      serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
+      parameters = {
+        "field.delim" = ","
+      }
+    }
+    stored_as_sub_directories = false
+    columns {
+      name = "name"
+      type = "string"
+    }
+    columns {
+      name = "location"
+      type = "string"
+    }
+
+    columns {
+      name = "age"
+      type = "int"
+    }
+  }
+}
+
+# Glue Table for Tranformed Data
+resource "aws_glue_catalog_table" "esdiel_data_transformed" {
+  name          = "esdiel_data_transformed"
+  database_name = aws_glue_catalog_database.default.name
+
+  table_type = "EXTERNAL_TABLE"
+  parameters = {
+    "classification" = "parquet"
+  }
+
+  storage_descriptor {
+    location          = "s3://esdiel-transformed-bucket/data"
+    input_format      = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format     = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    compressed        = false
+    number_of_buckets = -1
+    ser_de_info {
+      serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+      parameters            = {}
+    }
+    stored_as_sub_directories = false
+
+    columns {
+      name = "name"
+      type = "string"
+    }
+
+    columns {
+      name = "nationality"
+      type = "string"
+    }
+
+    columns {
+      name = "age"
+      type = "int"
+    }
+  }
+}
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
