@@ -26,7 +26,6 @@ module "notifications" {
   }
 }
 
-
 # Lambda Function
 module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
@@ -92,7 +91,6 @@ module "lambda" {
   }
 }
 
-
 # Glue Database
 resource "aws_glue_catalog_database" "default" {
   name = var.aws_glue_database_name
@@ -101,7 +99,7 @@ resource "aws_glue_catalog_database" "default" {
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
   name     = var.aws_glue_etl_job_name
-  role_arn = module.lambda.lambda_role_arn
+  role_arn = aws_iam_role.glue_role.arn
 
   command {
     name            = "glueetl"
@@ -112,4 +110,50 @@ resource "aws_glue_job" "glue_etl_job" {
   default_arguments = {
     "--job-bookmark-option" = "job-bookmark-enable"
   }
+}
+
+# IAM Role for Glue with appropriate permissions
+resource "aws_iam_role" "glue_role" {
+  name = "glue_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "glue.amazonaws.com"
+        },
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy" "glue_access_policy" {
+  role = aws_iam_role.glue_role.name
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+        ],
+        Effect = "Allow",
+        Resource = [
+          "arn:aws:s3:::esdiel-bucket/*",
+          "arn:aws:s3:::esdiel-transformed-bucket/*"
+        ],
+      },
+      {
+        Action = "s3:ListBucket",
+        Effect = "Allow",
+        Resource = [
+          "arn:aws:s3:::esdiel-bucket",
+          "arn:aws:s3:::esdiel-transformed-bucket"
+        ],
+      },
+    ],
+  })
 }
