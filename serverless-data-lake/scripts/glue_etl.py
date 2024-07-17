@@ -18,7 +18,7 @@ datasource = glueContext.create_dynamic_frame.from_options(
     format_options={"separator": ","},
     connection_type="s3",
     format="csv",
-    connection_options={"paths": ["s3://esdiel/"], "recurse": True},
+    connection_options={"paths": ["s3://esdiel-bucket/"], "recurse": True},
     transformation_ctx="datasource",
 )
 
