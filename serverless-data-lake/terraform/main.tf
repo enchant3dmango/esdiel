@@ -5,14 +5,14 @@ module "s3_esdiel" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
-  bucket = "esdiel-bucket"
+  bucket = var.aws_s3_esdiel_bucket
 }
 
 module "s3_esdiel_transformed" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
-  bucket = "esdiel-bucket-transformed"
+  bucket = var.aws_s3_esdiel_bucket_transformed
 }
 
 # S3 Bucket Notification
@@ -108,7 +108,7 @@ resource "aws_glue_catalog_database" "esdiel_database" {
   name = var.aws_glue_database_name
 }
 
-# Glue Table for Raw Data
+# Glue Table for raw data
 resource "aws_glue_catalog_table" "esdiel_data_raw" {
   name          = var.aws_glue_table_raw
   database_name = aws_glue_catalog_database.esdiel_database.name
@@ -147,7 +147,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
   }
 }
 
-# Glue Table for Tranformed Data
+# Glue Table for transformed data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   name          = var.aws_glue_table_transformed
   database_name = aws_glue_catalog_database.esdiel_database.name

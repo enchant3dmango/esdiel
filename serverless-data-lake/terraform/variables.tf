@@ -13,7 +13,7 @@ variable "aws_s3_esdiel_bucket" {
   default     = "esdiel-bucket"
 }
 
-variable "aws_s3_esdiel_transformed_bucket" {
+variable "aws_s3_esdiel_bucket_transformed" {
   description = "The target bucket name"
   default     = "esdiel-bucket-transformed"
 }
