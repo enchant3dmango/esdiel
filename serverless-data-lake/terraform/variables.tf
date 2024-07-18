@@ -48,6 +48,11 @@ variable "aws_glue_table_transformed" {
   default     = "esdiel_data_transformed"
 }
 
+variable "aws_lambda_function_name" {
+  description = "The function name of Lambda"
+  default     = "esdiel-handler"
+}
+
 variable "aws_lambda_role_name" {
   description = "The name of IAM Role of Lambda"
   default     = "EsdielLambdaRole"

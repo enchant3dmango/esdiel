@@ -48,7 +48,7 @@ module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "7.7.0"
 
-  function_name      = "esdiel-handler"
+  function_name      = var.aws_lambda_function_name
   description        = "My awesome serverless data lake (Esdiel) handler"
   handler            = "lambda_function.handler"
   runtime            = "python3.8"
@@ -276,6 +276,6 @@ resource "aws_iam_role_policy" "glue_access_policy" {
 resource "aws_s3_object" "glue_etl_script" {
   bucket      = module.s3_esdiel.s3_bucket_id
   key         = "scripts/glue_etl_script.py"
-  source      = data.local_file.glue_etl_script
-  source_hash = filemd5(data.local_file.glue_etl_script)
+  source      = data.local_file.glue_etl_script.filename
+  source_hash = filemd5(data.local_file.glue_etl_script.filename)
 }
