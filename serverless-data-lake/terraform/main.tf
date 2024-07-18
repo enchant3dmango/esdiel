@@ -147,7 +147,6 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
   }
 }
 
-
 # Glue Table for Tranformed Data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   name          = var.aws_glue_table_transformed
@@ -179,19 +178,16 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
       name = "name"
       type = "string"
     }
-
     columns {
       name = "country"
       type = "string"
     }
-
     columns {
       name = "age"
       type = "int"
     }
   }
 }
-
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
