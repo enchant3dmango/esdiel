@@ -35,7 +35,7 @@ variable "aws_glue_iam_role_name" {
 
 variable "aws_glue_etl_script_location" {
   description = "The S3 location of the Glue script"
-  default     = "s3://esdiel-bucket/scripts/glue_etl.py"
+  default     = "s3://esdiel-bucket/scripts/glue_etl_script.py"
 }
 
 variable "aws_glue_table_raw" {
