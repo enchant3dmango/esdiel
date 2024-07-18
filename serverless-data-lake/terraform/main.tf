@@ -127,7 +127,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
     ser_de_info {
       serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
       parameters = {
-        "field.delim"           = ","
+        "field.delim"            = ","
         "skip.header.line.count" = "1"
       }
     }
@@ -154,20 +154,23 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"
+
   parameters = {
-    "classification" = "csv"
+    EXTERNAL              = "TRUE"
+    classification        = "parquet"
+    "parquet.compression" = "SNAPPY"
   }
 
   storage_descriptor {
-    location          = "s3://esdiel-bucket-transformed/data"
-    input_format      = "org.apache.hadoop.mapred.TextInputFormat"
-    output_format     = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
-    compressed        = false
-    number_of_buckets = -1
+    location      = "s3://esdiel-bucket-transformed/data"
+    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    compressed    = false
+
     ser_de_info {
-      serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
+      serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
       parameters = {
-        "field.delim" = ","
+        "serialization.format" = 1
       }
     }
     stored_as_sub_directories = false
@@ -178,7 +181,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
     }
 
     columns {
-      name = "nationality"
+      name = "country"
       type = "string"
     }
 
@@ -256,7 +259,7 @@ resource "aws_iam_role_policy" "glue_access_policy" {
           "logs:PutLogEvents",
           "logs:DescribeLogStreams"
         ],
-        Effect = "Allow",
+        Effect   = "Allow",
         Resource = "arn:aws:logs:*:*:*"
       }
     ],
