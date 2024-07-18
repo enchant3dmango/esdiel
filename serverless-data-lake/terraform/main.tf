@@ -249,6 +249,16 @@ resource "aws_iam_role_policy" "glue_access_policy" {
           "arn:aws:s3:::esdiel-bucket-transformed"
         ],
       },
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        Effect = "Allow",
+        Resource = "arn:aws:logs:*:*:*"
+      }
     ],
   })
 }
