@@ -1,9 +1,16 @@
 data "aws_caller_identity" "current" {}
 
+data "local_file" "glue_etl_script" {
+  filename = "../scripts/glue_etl_script.py"
+}
+
 # S3 Bucket
 module "s3_esdiel" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
+
+  # Allow deletion of non-empty bucket
+  force_destroy = true
 
   bucket = var.aws_s3_esdiel_bucket
 }
@@ -11,6 +18,9 @@ module "s3_esdiel" {
 module "s3_esdiel_transformed" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
+
+  # Allow deletion of non-empty bucket
+  force_destroy = true
 
   bucket = var.aws_s3_esdiel_bucket_transformed
 }
@@ -260,4 +270,12 @@ resource "aws_iam_role_policy" "glue_access_policy" {
       }
     ],
   })
+}
+
+# Upload the Glue script to S3 bucket on apply
+resource "aws_s3_object" "glue_etl_script" {
+  bucket      = module.s3_esdiel.s3_bucket_id
+  key         = "scripts/glue_etl_script.py"
+  source      = data.local_file.glue_etl_script
+  source_hash = filemd5(data.local_file.glue_etl_script)
 }
