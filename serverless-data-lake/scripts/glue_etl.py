@@ -1,10 +1,13 @@
-import sys
 import logging
+import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from pyspark.sql.types import StringType, IntegerType
+from pyspark.sql.functions import col
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -21,55 +24,55 @@ job = Job(glueContext)
 job.init(args["JOB_NAME"], args)
 
 # Read CSV file from S3
-datasource = glueContext.create_dynamic_frame.from_options(
-    format_options={"separator": ",", "skip.header.line.count": "1"},
+ReadSourceCSV = glueContext.create_dynamic_frame.from_options(
+    format_options={"quoteChar": '"', "withHeader": True, "separator": ","},
     connection_type="s3",
     format="csv",
-    connection_options={"paths": ["s3://esdiel-bucket/data"], "recurse": True},
-    transformation_ctx="datasource",
+    connection_options={"paths": ["s3://esdiel-bucket/data/"], "recurse": True},
+    transformation_ctx="ReadSourceCSV",
 )
 
 # Log schema and data from source
 logger.info("Schema of the input data:")
-datasource.printSchema()
+ReadSourceCSV.printSchema()
 
 logger.info("Rows from the input data:")
-datasource.show()
+ReadSourceCSV.show()
 
-# Verify the schema and data types of the input data
-schema = datasource.schema()
-logger.info("Schema fields:")
-for field in schema.fields:
-    logger.info(f"{field.name}: {field.dataType}")
+# Convert DynamicFrame to DataFrame for type casting
+dataframe = ReadSourceCSV.toDF()
 
-# Apply field mapping
-applymapping = ApplyMapping.apply(
-    frame=datasource,
-    mappings=[
-        ("name", "string", "name", "string"),
-        ("location", "string", "nationality", "string"),
-        ("age", "int", "age", "int"),
-    ],
-    transformation_ctx="applymapping",
-)
+# Cast columns to appropriate types
+dataframe = dataframe.withColumn("name", col("name").cast(StringType())) \
+       .withColumn("location", col("location").cast(StringType())) \
+       .withColumn("age", col("age").cast(IntegerType()))
+
+# Apply field mapping (renaming columns)
+dataframe = dataframe.withColumnRenamed("location", "country")
+
+# Convert back to DynamicFrame
+ApplyFieldMapping = DynamicFrame.fromDF(dataframe, glueContext, "ApplyFieldMapping")
 
 # Log schema and data after field mapping
 logger.info("Schema of the transformed data:")
-applymapping.printSchema()
+ApplyFieldMapping.printSchema()
 
 logger.info("Rows from the transformed data:")
-applymapping.show()
+ApplyFieldMapping.show()
 
-# Write the transformed data to S3
-datasink = glueContext.write_dynamic_frame.from_options(
-    frame=applymapping,
+# Write the mapped data to S3
+WriteMappedData = glueContext.write_dynamic_frame.from_options(
+    frame=ApplyFieldMapping,
     connection_type="s3",
-    connection_options={"path": "s3://esdiel-bucket-transformed/data"},
-    format="csv",
-    transformation_ctx="datasink",
+    format="glueparquet",
+    connection_options={
+        "path": "s3://esdiel-bucket-transformed/data/",
+        "partitionKeys": [],
+    },
+    format_options={"compression": "snappy"},
+    transformation_ctx="WriteMappedData",
 )
 
-# Commit the job
 job.commit()
 
 logger.info("Job completed successfully.")
