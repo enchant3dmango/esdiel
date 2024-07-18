@@ -13,7 +13,7 @@ variable "aws_s3_esdiel_bucket" {
   default     = "esdiel-bucket"
 }
 
-variable "aws_s3_esdiel_transformed_bucket" {
+variable "aws_s3_esdiel_bucket_transformed" {
   description = "The target bucket name"
   default     = "esdiel-bucket-transformed"
 }
@@ -35,7 +35,7 @@ variable "aws_glue_iam_role_name" {
 
 variable "aws_glue_etl_script_location" {
   description = "The S3 location of the Glue script"
-  default     = "s3://esdiel-bucket/scripts/glue_etl.py"
+  default     = "s3://esdiel-bucket/scripts/glue_etl_script.py"
 }
 
 variable "aws_glue_table_raw" {
@@ -46,6 +46,11 @@ variable "aws_glue_table_raw" {
 variable "aws_glue_table_transformed" {
   description = "The Glue table name for Esdiel transformed data"
   default     = "esdiel_data_transformed"
+}
+
+variable "aws_lambda_function_name" {
+  description = "The function name of Lambda"
+  default     = "esdiel-handler"
 }
 
 variable "aws_lambda_role_name" {

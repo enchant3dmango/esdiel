@@ -1,18 +1,28 @@
 data "aws_caller_identity" "current" {}
 
+data "local_file" "glue_etl_script" {
+  filename = "../scripts/glue_etl_script.py"
+}
+
 # S3 Bucket
 module "s3_esdiel" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
-  bucket = "esdiel-bucket"
+  # Allow deletion of non-empty bucket
+  force_destroy = true
+
+  bucket = var.aws_s3_esdiel_bucket
 }
 
 module "s3_esdiel_transformed" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "4.1.2"
 
-  bucket = "esdiel-bucket-transformed"
+  # Allow deletion of non-empty bucket
+  force_destroy = true
+
+  bucket = var.aws_s3_esdiel_bucket_transformed
 }
 
 # S3 Bucket Notification
@@ -38,7 +48,7 @@ module "lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "7.7.0"
 
-  function_name      = "esdiel-handler"
+  function_name      = var.aws_lambda_function_name
   description        = "My awesome serverless data lake (Esdiel) handler"
   handler            = "lambda_function.handler"
   runtime            = "python3.8"
@@ -108,7 +118,7 @@ resource "aws_glue_catalog_database" "esdiel_database" {
   name = var.aws_glue_database_name
 }
 
-# Glue Table for Raw Data
+# Glue Table for raw data
 resource "aws_glue_catalog_table" "esdiel_data_raw" {
   name          = var.aws_glue_table_raw
   database_name = aws_glue_catalog_database.esdiel_database.name
@@ -147,8 +157,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
   }
 }
 
-
-# Glue Table for Tranformed Data
+# Glue Table for transformed data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   name          = var.aws_glue_table_transformed
   database_name = aws_glue_catalog_database.esdiel_database.name
@@ -179,19 +188,16 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
       name = "name"
       type = "string"
     }
-
     columns {
       name = "country"
       type = "string"
     }
-
     columns {
       name = "age"
       type = "int"
     }
   }
 }
-
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
@@ -264,4 +270,12 @@ resource "aws_iam_role_policy" "glue_access_policy" {
       }
     ],
   })
+}
+
+# Upload the Glue script to S3 bucket on apply
+resource "aws_s3_object" "glue_etl_script" {
+  bucket      = module.s3_esdiel.s3_bucket_id
+  key         = "scripts/glue_etl_script.py"
+  source      = data.local_file.glue_etl_script.filename
+  source_hash = filemd5(data.local_file.glue_etl_script.filename)
 }
