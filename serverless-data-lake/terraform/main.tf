@@ -127,7 +127,8 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
     ser_de_info {
       serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
       parameters = {
-        "field.delim" = ","
+        "field.delim"            = ","
+        "skip.header.line.count" = "1"
       }
     }
     stored_as_sub_directories = false
@@ -139,7 +140,6 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
       name = "location"
       type = "string"
     }
-
     columns {
       name = "age"
       type = "int"
@@ -147,25 +147,31 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
   }
 }
 
+
 # Glue Table for Tranformed Data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   name          = var.aws_glue_table_transformed
   database_name = aws_glue_catalog_database.esdiel_database.name
 
   table_type = "EXTERNAL_TABLE"
+
   parameters = {
-    "classification" = "parquet"
+    EXTERNAL              = "TRUE"
+    classification        = "parquet"
+    "parquet.compression" = "SNAPPY"
   }
 
   storage_descriptor {
-    location          = "s3://esdiel-bucket-transformed/data"
-    input_format      = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
-    output_format     = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-    compressed        = false
-    number_of_buckets = -1
+    location      = "s3://esdiel-bucket-transformed/data"
+    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    compressed    = false
+
     ser_de_info {
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
-      parameters            = {}
+      parameters = {
+        "serialization.format" = 1
+      }
     }
     stored_as_sub_directories = false
 
@@ -175,7 +181,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
     }
 
     columns {
-      name = "nationality"
+      name = "country"
       type = "string"
     }
 
@@ -185,6 +191,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
     }
   }
 }
+
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
@@ -245,6 +252,16 @@ resource "aws_iam_role_policy" "glue_access_policy" {
           "arn:aws:s3:::esdiel-bucket-transformed"
         ],
       },
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ],
+        Effect   = "Allow",
+        Resource = "arn:aws:logs:*:*:*"
+      }
     ],
   })
 }
