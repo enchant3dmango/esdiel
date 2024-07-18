@@ -127,7 +127,8 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
     ser_de_info {
       serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
       parameters = {
-        "field.delim" = ","
+        "field.delim"           = ","
+        "skip.header.line.count" = "1"
       }
     }
     stored_as_sub_directories = false
@@ -139,13 +140,13 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
       name = "location"
       type = "string"
     }
-
     columns {
       name = "age"
       type = "int"
     }
   }
 }
+
 
 # Glue Table for Tranformed Data
 resource "aws_glue_catalog_table" "esdiel_data_transformed" {
@@ -154,18 +155,20 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
 
   table_type = "EXTERNAL_TABLE"
   parameters = {
-    "classification" = "parquet"
+    "classification" = "csv"
   }
 
   storage_descriptor {
     location          = "s3://esdiel-bucket-transformed/data"
-    input_format      = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
-    output_format     = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    input_format      = "org.apache.hadoop.mapred.TextInputFormat"
+    output_format     = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
     compressed        = false
     number_of_buckets = -1
     ser_de_info {
-      serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
-      parameters            = {}
+      serialization_library = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
+      parameters = {
+        "field.delim" = ","
+      }
     }
     stored_as_sub_directories = false
 
@@ -185,6 +188,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
     }
   }
 }
+
 
 # Glue Job
 resource "aws_glue_job" "glue_etl_job" {
