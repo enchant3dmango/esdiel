@@ -22,7 +22,7 @@
 - Create a profile in your AWS config and credentials file then adjust the variable **aws_profile** in **variables.tf**.
 - Adjust all variables in **variables.tf** if needed.
 
-##### Makefile
+#### Makefile
 1. Navigate to **serverless-data-lake** directory.
 2. Run `make install` to install dependencies.
 3. Run `make format` to format all Python code in serverless-data-lake directory.
