@@ -22,17 +22,22 @@
 - Create a profile in your AWS config and credentials file then adjust the variable **aws_profile** in **variables.tf**.
 - Adjust all variables in **variables.tf** if needed.
 
-#### Makefile
+##### Makefile
 1. Navigate to **serverless-data-lake** directory.
 2. Run `make install` to install dependencies.
 3. Run `make format` to format all Python code in serverless-data-lake directory.
 4. Run `make lint` to lint all Python code in serverless-data-lake directory.
 
-#### Terraform
+##### Terraform
 1. Navigate to **serverless-data-lake** directory, then navigate to **terraform** directory.
 2. Run `terraform init` to initialize all terraform resources.
 3. Run `terraform plan -out=plan.tfplan` to create execution plan.
 4. Run `terraform apply "plan.tfplan"` to apply the execution plan.
+5. Run `terraform show` to inspect the current state.
+
+##### Extra Steps
+1. Upload data.csv to the data folder in the source bucket using AWS CLI or AWS Console.
+2. Ah, there you go!
 
 ### References
 - [AWS Documentation](https://docs.aws.amazon.com/)
