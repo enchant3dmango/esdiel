@@ -51,7 +51,7 @@ module "lambda" {
   function_name      = var.aws_lambda_function_name
   description        = "My awesome serverless data lake (Esdiel) handler"
   handler            = "lambda_function.handler"
-  runtime            = "python3.8"
+  runtime            = "python3.11"
   role_name          = var.aws_lambda_role_name
   attach_policy_json = true
   policy_json = jsonencode({

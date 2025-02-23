@@ -5,15 +5,15 @@
     <picture>
       <source  srcset="./files/esdiel.png">
       <img alt="Esdiel Infrastructure" src="./files/esdiel.png">
-    </picture>    
+    </picture>
   </a>
 </p>
 
 ### Setup
 #### Prerequisites
-- Terraform (1.9.2)
-- AWS CLI (2.17.11)
-- Python (3.8)
+- Terraform (1.10.5)
+- AWS CLI (2.17.32)
+- Python (3.11)
 - GNU Make (3.81)
 
 #### Steps
