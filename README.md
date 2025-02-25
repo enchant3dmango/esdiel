@@ -20,15 +20,19 @@
 4. Run `make lint` to lint all Python code in serverless-data-lake directory.
 
 ##### Terraform
-1. Navigate to **serverless-data-lake** directory, then navigate to **terraform** directory.
-2. Run `terraform init` to initialize all terraform resources.
-3. Run `terraform plan -out=plan.tfplan` to create execution plan.
-4. Run `terraform apply "plan.tfplan"` to apply the execution plan.
-5. Run `terraform show` to inspect the current state.
+1. Ensure you already have configured AWS credentials in your device.
+2. Navigate to **serverless-data-lake** directory, then navigate to **terraform** directory.
+3. Create a `.tfvars` file in the terraform directory using the `.tfvars.template`. Then replace all placeholder with your own variable values.
+4. Run `terraform init` to initialize all terraform resources.
+5. Run `terraform plan -var-file=.tfvars -out=plan.tfplan` to create execution plan.
+6. Run `terraform apply "plan.tfplan"` to apply the execution plan.
+7. Run `terraform show` to inspect the current state.
 
 ##### Extra Steps
 1. Upload data.csv to the data folder in the source bucket using AWS CLI or AWS Console.
-2. Ah, there you go!
+2. Check your AWS Glue ETL Job and your AWS Glue Data Catalog.
+
+Ah, there you go!
 
 ### References
 - [AWS Documentation](https://docs.aws.amazon.com/)
