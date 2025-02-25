@@ -1,0 +1,4 @@
+aws_region                       = "<YOUR_AWS_REGION>"
+aws_profile                      = "<YOUR_AWS_PROFILE>"
+aws_s3_esdiel_bucket             = "<YOUR_S3_BUCKET>"
+aws_s3_esdiel_bucket_transformed = "<YOUR_S3_BUCKET_TRANSFORMED>"
