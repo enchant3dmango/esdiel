@@ -129,7 +129,7 @@ resource "aws_glue_catalog_table" "esdiel_data_raw" {
   }
 
   storage_descriptor {
-    location          = "s3://esdiel-bucket/data"
+    location          = "s3://:${var.aws_s3_esdiel_bucket}/data"
     input_format      = "org.apache.hadoop.mapred.TextInputFormat"
     output_format     = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
     compressed        = false
@@ -171,7 +171,7 @@ resource "aws_glue_catalog_table" "esdiel_data_transformed" {
   }
 
   storage_descriptor {
-    location      = "s3://esdiel-bucket-transformed/data"
+    location      = "s3://${var.aws_s3_esdiel_bucket_transformed}/data"
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
     compressed    = false
@@ -206,7 +206,7 @@ resource "aws_glue_job" "glue_etl_job" {
 
   command {
     name            = "glueetl"
-    script_location = var.aws_glue_etl_script_location
+    script_location = "s3://${var.aws_s3_esdiel_bucket}/scripts/glue_etl_script.py"
     python_version  = "3"
   }
 
@@ -246,16 +246,16 @@ resource "aws_iam_role_policy" "glue_access_policy" {
         ],
         Effect = "Allow",
         Resource = [
-          "arn:aws:s3:::esdiel-bucket/*",
-          "arn:aws:s3:::esdiel-bucket-transformed/*"
+          "arn:aws:s3:::${var.aws_s3_esdiel_bucket}/*",
+          "arn:aws:s3:::${var.aws_s3_esdiel_bucket_transformed}/*"
         ],
       },
       {
         Action = "s3:ListBucket",
         Effect = "Allow",
         Resource = [
-          "arn:aws:s3:::esdiel-bucket",
-          "arn:aws:s3:::esdiel-bucket-transformed"
+          "arn:aws:s3::::${var.aws_s3_esdiel_bucket}",
+          "arn:aws:s3::::${var.aws_s3_esdiel_bucket_transformed}"
         ],
       },
       {
