@@ -15,13 +15,13 @@ This project serves as my learning documentation.
 
 This project sets up a simple serverless data lake using AWS services, managed with Terraform. As I write this documentation, the project only limited to example data type like the `data.csv`.
 
-### Data Pipeline Workflow
+### Workflow
 1.	Raw Data (S3): Stores incoming raw data.
 2.	Trigger (Lambda): Watches for new data and triggers the transformation process.
 3.	Transform Data (Glue ETL): Cleans and processes the raw data, storing the results in another S3 bucket.
 4.	Transformed Data (S3): Stores the transformed data.
 5.	Discover Data (Glue Crawlers): Scans the raw and transformed data and creates metadata.
-6.	Catalog Data (Glue Catalog): Stores metadata, making data available for querying.
+6.	Catalog Data (Glue Data Catalog): Stores metadata, making data available for querying.
 7.	Explore Data (Athena): Allows querying of the processed data via SQL.
 
 ### Infrastructure Management
