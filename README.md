@@ -35,8 +35,8 @@ Terraform automates the provisioning of AWS resources.
 - GNU Make (3.81)
 
 ### Steps
-- Clone the repository to your local repository.
-- Ensure you already have configured AWS credentials in your device.
+1. Clone the repository to your local repository.
+2. Ensure you already have configured AWS credentials in your device.
 
 #### Terraform
 1. Navigate to **serverless-data-lake** directory, then navigate to **terraform** directory.
