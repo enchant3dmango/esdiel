@@ -1,9 +1,14 @@
 name: Esdiel CI
 
 on:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'lambda_function.py'
+    branches: [main]
   pull_request:
     paths:
-      - 'scripts/*'
+      - 'scripts/**'
       - 'lambda_function.py'
     branches: [main]
 
