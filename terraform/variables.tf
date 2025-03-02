@@ -4,6 +4,7 @@ variable "aws_region" {
 
 variable "aws_profile" {
   description = "The project credentials profile"
+  default     = "default"
 }
 
 variable "aws_s3_esdiel_bucket" {
