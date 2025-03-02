@@ -1,9 +1,10 @@
-name: Awesome CI - Esdiel
+name: Esdiel CI
 
 on:
   pull_request:
     paths:
-      - 'serverless-data-lake/**'
+      - 'scripts/*'
+      - 'lambda_function.py'
     branches: [main]
 
 jobs:
@@ -21,8 +22,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          cd serverless-data-lake
           make install
       - name: Format and lint Python code
         run: |
-          cd serverless-data-lake && make format && make lint
+          make format && make lint
